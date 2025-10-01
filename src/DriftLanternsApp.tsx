@@ -2,6 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Drift Lanterns – Focus mode with styled text (fixed StarDust reference)
+// ===== Config toggles =====
+// 배 표시 여부와 랜턴 애니메이션 파라미터를 손쉽게 튜닝할 수 있게 상수로 분리
+const SHOW_BOAT = false; // 배 임시 비활성화 (true로 바꾸면 복구)
+const LAUNCH_START_Y = 10; // 랜턴 시작 위치 (vh, 화면 하단에서 위로 양수)
+const LAUNCH_DISTANCE_VH = 130; // 위로 떠오르는 거리 (vh)
+const LAUNCH_DURATION = 16; // 초
+const IGNITION_MS = 700; // 불 켜진 뒤 잠깐 머문 후 상승(ms)
+
 export default function DriftLanternsApp() {
   const [text, setText] = useState<string>("");
   const [started, setStarted] = useState<boolean>(false);
@@ -69,7 +77,7 @@ export default function DriftLanternsApp() {
 
       <StarDust />
       <Ocean />
-      <Boat />
+      {SHOW_BOAT && <Boat />}
       <AmbientLanterns count={8} />
 
       {!started ? (
@@ -126,7 +134,14 @@ export default function DriftLanternsApp() {
         </div>
       )}
 
-      <LanternLaunch text={text} launched={launched} />
+      <LanternLaunch
+        text={text}
+        launched={launched}
+        startY={LAUNCH_START_Y}
+        distanceVH={LAUNCH_DISTANCE_VH}
+        duration={LAUNCH_DURATION}
+        withBoat={SHOW_BOAT}
+      />
     </div>
   );
 }
@@ -187,23 +202,41 @@ function Boat() {
   );
 }
 
-function LanternLaunch({ text, launched }: { text: string; launched: boolean }) {
+function LanternLaunch({
+  text,
+  launched,
+  startY = 0,
+  distanceVH = 110,
+  duration = 18,
+  withBoat = true,
+}: {
+  text: string;
+  launched: boolean;
+  startY?: number; // vh
+  distanceVH?: number; // vh
+  duration?: number; // seconds
+  withBoat?: boolean;
+}) {
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-center pb-[12rem]">
+    <div className={`pointer-events-none absolute inset-0 z-10 flex items-end justify-center ${withBoat ? 'pb-[12rem]' : 'pb-[9rem]'}`}>
       <motion.div
-        initial={false}
+        initial={{ y: `${startY}vh`, opacity: 1 }}
         animate={
           launched
-            ? { y: "-110vh", opacity: [1, 1, 0.9, 0.7, 0.3, 0] }
-            : { y: 0, opacity: 1 }
+            ? { y: `-${startY + distanceVH}vh`, opacity: [1, 1, 0.95, 0.7, 0.35, 0] }
+            : { y: `${startY}vh`, opacity: 1 }
         }
-        transition={{ duration: launched ? 18 : 0.4, ease: "easeInOut" }}
+        transition={{ duration: launched ? duration : 0.4, ease: 'easeInOut' }}
         className="flex flex-col items-center gap-3"
       >
         <Lantern lit={launched} text={launched ? text : undefined} />
-        {!launched && (
-          <div className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] text-white/70">Your lantern is waiting.</div>
-        )}
+
+        {/* 라벨: 항상 렌더링하여 레이아웃 점프 방지, 가시성만 토글 */}
+        <div className="h-5 flex items-center justify-center">
+          <span className={`rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] text-white/70 transition-opacity duration-300 ease-in-out translate-y-1 md:translate-y-1.5 ${launched ? 'opacity-0' : 'opacity-100'}`}>
+            Your lantern is waiting.
+          </span>
+        </div>
       </motion.div>
     </div>
   );
