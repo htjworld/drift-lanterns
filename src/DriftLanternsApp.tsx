@@ -142,6 +142,11 @@ export default function DriftLanternsApp() {
         duration={LAUNCH_DURATION}
         withBoat={SHOW_BOAT}
       />
+      {!started && (
+        <div className="pointer-events-none absolute left-1/2 top-6 z-20 -translate-x-1/2 text-center text-xs text-white/60">
+          A quiet place at sea. Headphones help.
+        </div>
+      )}
     </div>
   );
 }
