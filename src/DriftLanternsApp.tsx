@@ -1,23 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-// Drift Lanterns – Focus mode with styled text (fixed StarDust reference)
-// ===== Config toggles =====
-// 배 표시 여부와 랜턴 애니메이션 파라미터를 손쉽게 튜닝할 수 있게 상수로 분리
-const SHOW_BOAT = false; // 배 임시 비활성화 (true로 바꾸면 복구)
-const LAUNCH_START_Y = 10; // 랜턴 시작 위치 (vh, 화면 하단에서 위로 양수)
-const LAUNCH_DISTANCE_VH = 130; // 위로 떠오르는 거리 (vh)
-const LAUNCH_DURATION = 16; // 초
-const IGNITION_MS = 700; // 불 켜진 뒤 잠깐 머문 후 상승(ms)
+const SHOW_BOAT = false;
+const LAUNCH_START_Y = 10;
+const LAUNCH_DISTANCE_VH = 130;
+const LAUNCH_DURATION = 16;
 
-export default function DriftLanternsApp() {
+export default function HomePage() {
   const [text, setText] = useState<string>("");
   const [started, setStarted] = useState<boolean>(false);
   const [seconds, setSeconds] = useState<number>(60);
   const [launched, setLaunched] = useState<boolean>(false);
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [musicStarted, setMusicStarted] = useState(false);
+  const [cueIndex, setCueIndex] = useState<number>(0);
+  const navigate = useNavigate();
 
   const cues: string[] = [
     "Breathe in… and out.",
@@ -26,7 +22,6 @@ export default function DriftLanternsApp() {
     "Your worry is smaller than it felt.",
     "You did well. Be gentle with yourself.",
   ];
-  const [cueIndex, setCueIndex] = useState<number>(0);
 
   useEffect(() => {
     if (!started) return;
@@ -34,19 +29,14 @@ export default function DriftLanternsApp() {
     setSeconds(60);
     setCueIndex(0);
 
-    if (!musicStarted && audioRef.current) {
-      audioRef.current.play().catch(() => {
-        console.log("Autoplay blocked until user interaction");
-      });
-      setMusicStarted(true);
-    }
+    // 음악 재생 트리거 (레이아웃 오디오)
+    window.dispatchEvent(new CustomEvent("music:play"));
 
     const tick = setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : 0)), 1000);
     const cueTimer = setInterval(
       () => setCueIndex((i) => (i < cues.length - 1 ? i + 1 : i)),
       12000
     );
-
     return () => {
       clearInterval(tick);
       clearInterval(cueTimer);
@@ -64,22 +54,11 @@ export default function DriftLanternsApp() {
   const cueMotion = {
     initial: { opacity: 0, y: 8 },
     animate: { opacity: 1, y: 0, transition: { duration: 1 } },
-    exit: { opacity: 0, y: -8, transition: { duration: 1 } },
+    exit:   { opacity: 0, y: -8, transition: { duration: 1 } },
   } as const;
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#0a1230] text-white">
-      <audio ref={audioRef} loop>
-        <source src="/sounds/ambient.mp3" type="audio/mpeg" />
-      </audio>
-
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-10%,rgba(160,180,255,0.18),transparent_55%),linear-gradient(to_bottom,#0a1230_0%,#0a1230_40%,#050b22_60%,#020817_100%)]" />
-
-      <StarDust />
-      <Ocean />
-      {SHOW_BOAT && <Boat />}
-      <AmbientLanterns count={8} />
-
+    <div className="relative min-h-screen w-full overflow-hidden">
       {!started ? (
         <div className="relative z-20 mx-auto mt-20 w-full max-w-xl px-4">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md shadow-2xl space-y-6">
@@ -117,19 +96,32 @@ export default function DriftLanternsApp() {
           </AnimatePresence>
 
           {seconds === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute bottom-20 left-1/2 -translate-x-1/2 space-y-3 text-center"
-            >
-              <h2 className="text-2xl font-semibold drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">The lantern is gone. You are lighter now.</h2>
-              <button
-                onClick={reset}
-                className="rounded-lg border border-white/20 px-4 py-2 hover:bg-white/10"
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute bottom-20 left-1/2 -translate-x-1/2 space-y-3 text-center"
               >
-                Release another
+                <h2 className="text-2xl font-semibold drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+                  The lantern is gone. You are lighter now.
+                </h2>
+                <button
+                  onClick={reset}
+                  className="rounded-lg border border-white/20 px-4 py-2 hover:bg-white/10"
+                >
+                  Release another
+                </button>
+              </motion.div>
+
+              {/* 우하단 고정: 아주 작은 🏮 → /moments */}
+              <button
+                onClick={() => navigate("/moments")}
+                className="fixed right-4 bottom-4 text-xl opacity-70 hover:opacity-100 transition"
+                aria-label="Open moments"
+              >
+                🏮
               </button>
-            </motion.div>
+            </>
           )}
         </div>
       )}
@@ -142,6 +134,7 @@ export default function DriftLanternsApp() {
         duration={LAUNCH_DURATION}
         withBoat={SHOW_BOAT}
       />
+
       {!started && (
         <div className="pointer-events-none absolute left-1/2 top-6 z-20 -translate-x-1/2 text-center text-xs text-white/60">
           A quiet place at sea. Headphones help.
@@ -151,62 +144,7 @@ export default function DriftLanternsApp() {
   );
 }
 
-// Supporting components
-
-function StarDust() {
-  return (
-    <div className="pointer-events-none absolute inset-0 opacity-50">
-      <div className="absolute inset-0" style={{ backgroundImage: stars(160), backgroundRepeat: "repeat" }} />
-      <div className="absolute inset-0" style={{ filter: "blur(1px)", opacity: 0.6, backgroundImage: stars(120) }} />
-    </div>
-  );
-}
-
-function stars(n: number): string {
-  const dots = Array.from({ length: n }).map(() => {
-    const x = Math.random() * 100;
-    const y = Math.random() * 100;
-    const s = Math.random() * 1.1 + 0.3;
-    const a = Math.random() * 0.8 + 0.2;
-    return `radial-gradient(${s}px_${s}px_at_${x}%_${y}%,rgba(255,255,255,${a}),transparent_${s * 2}px)`;
-  });
-  return dots.join(",");
-}
-
-function Ocean() {
-  return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[36vh]">
-      <div className="absolute inset-x-0 bottom-0 h-full bg-[linear-gradient(to_top,#021227_0%,#03142c_60%,transparent_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-[18vh] overflow-hidden">
-        <div
-          className="absolute inset-x-0 bottom-0 h-[18vh] opacity-70"
-          style={{ background: "radial-gradient(ellipse at 50% 120%, rgba(90,120,200,0.35), transparent 60%)", animation: "wave1 12s ease-in-out infinite" }}
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-[16vh] opacity-60"
-          style={{ background: "radial-gradient(ellipse at 50% 120%, rgba(60,100,200,0.22), transparent 55%)", animation: "wave2 16s ease-in-out infinite" }}
-        />
-      </div>
-      <style>{`
-        @keyframes wave1 { 0%,100% { transform: translateX(0px) } 50% { transform: translateX(20px) } }
-        @keyframes wave2 { 0%,100% { transform: translateX(0px) } 50% { transform: translateX(-24px) } }
-      `}</style>
-    </div>
-  );
-}
-
-function Boat() {
-  return (
-    <div className="pointer-events-none absolute left-1/2 bottom-[4rem] z-10 -translate-x-1/2">
-      <motion.div animate={{ y: [0, -3, 0, 2, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="relative">
-        <div className="h-3 w-28 rounded-b-3xl bg-[#1b233a] shadow-[0_-6px_20px_rgba(255,255,255,0.06)_inset]" />
-        <div className="absolute -top-12 left-1/2 h-12 w-1 -translate-x-1/2 bg-[#d9d9d9]" />
-        <div className="absolute -top-12 left-1/2 h-9 w-9 -translate-x-[2px] origin-left rounded-[2px] bg-white/80" />
-      </motion.div>
-    </div>
-  );
-}
-
+/* === 필요한 전경 컴포넌트만 유지 (Boat는 필요 시) === */
 function LanternLaunch({
   text,
   launched,
@@ -217,9 +155,9 @@ function LanternLaunch({
 }: {
   text: string;
   launched: boolean;
-  startY?: number; // vh
-  distanceVH?: number; // vh
-  duration?: number; // seconds
+  startY?: number;
+  distanceVH?: number;
+  duration?: number;
   withBoat?: boolean;
 }) {
   return (
@@ -235,8 +173,6 @@ function LanternLaunch({
         className="flex flex-col items-center gap-3"
       >
         <Lantern lit={launched} text={launched ? text : undefined} />
-
-        {/* 라벨: 항상 렌더링하여 레이아웃 점프 방지, 가시성만 토글 */}
         <div className="h-5 flex items-center justify-center">
           <span className={`rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] text-white/70 transition-opacity duration-300 ease-in-out translate-y-1 md:translate-y-1.5 ${launched ? 'opacity-0' : 'opacity-100'}`}>
             Your lantern is waiting.
@@ -266,40 +202,6 @@ function Lantern({ lit, text }: { lit?: boolean; text?: string }) {
           <span className="line-clamp-3 text-[10px] text-black/70">{text}</span>
         </div>
       )}
-    </div>
-  );
-}
-
-function AmbientLanterns({ count = 6 }: { count?: number }) {
-  const configs = useMemo(() => {
-    return Array.from({ length: count }).map(() => ({
-      delay: Math.random() * 8,
-      duration: 24 + Math.random() * 14,
-      startX: 8 + Math.random() * 84,
-      size: 10 + Math.random() * 10,
-      opacity: 0.25 + Math.random() * 0.35,
-    }));
-  }, [count]);
-
-  return (
-    <div className="pointer-events-none absolute inset-0 z-0">
-      {configs.map((cfg, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={{ left: `${cfg.startX}vw`, bottom: "-6vh", opacity: cfg.opacity }}
-          initial={{ y: 0, x: 0 }}
-          animate={{ y: "-110vh", x: [0, 2, -2, 1, 0] }}
-          transition={{ duration: cfg.duration, delay: cfg.delay, ease: "easeInOut", repeat: Infinity, repeatDelay: 4 }}
-        >
-          <div className="relative" style={{ width: cfg.size + 6, height: cfg.size + 12 }}>
-            <div className="absolute left-1/2 top-1/2 h-full w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-md bg-[#fff7e6]" />
-            <div className="absolute -top-1 left-1/2 h-1 w-full -translate-x-1/2 rounded-full bg-[#8b5e34]" />
-            <div className="absolute -bottom-1 left-1/2 h-1 w-full -translate-x-1/2 rounded-full bg-[#8b5e34]" />
-            <div className="absolute -inset-2 rounded-md bg-[radial-gradient(circle,rgba(255,200,120,0.28)_0%,transparent_70%)]" />
-          </div>
-        </motion.div>
-      ))}
     </div>
   );
 }
