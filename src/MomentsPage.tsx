@@ -1,5 +1,6 @@
-// MomentsPage.tsx
 import { Link } from "react-router-dom";
+import Gallery from "./components/Gallery";
+import { MOMENTS } from "./data/moments";
 
 export default function MomentsPage() {
   return (
@@ -9,32 +10,15 @@ export default function MomentsPage() {
         <Link to="/" className="text-white/70 hover:text-white text-sm underline underline-offset-4">Back</Link>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-2 text-sm">
-        <span className="rounded-full border border-white/15 px-3 py-1 bg-white/5">Chiang Mai Lantern Festival</span>
-        <span className="rounded-full border border-white/15 px-3 py-1 bg-white/5">Thailand</span>
-        <span className="rounded-full border border-white/15 px-3 py-1 bg-white/5">Taiwan (Pingxi)</span>
-        <span className="rounded-full border border-white/15 px-3 py-1 bg-white/5">Sea Lanterns</span>
-        <span className="rounded-full border border-white/15 px-3 py-1 bg-white/5">Articles</span>
-      </div>
+      <Gallery items={MOMENTS} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-10">
-        {[1,2,3,4,5,6].map(i => (
-          <div key={i} className="aspect-[3/2] overflow-hidden rounded-xl border border-white/10 bg-white/5">
-            <img
-              src={`/gallery/sample-${i}.jpg`}
-              alt="lantern"
-              className="h-full w-full object-cover hover:scale-[1.02] transition-transform"
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </div>
-
+    <br></br>
+    <br></br>
       <article className="prose prose-invert max-w-none prose-p:leading-relaxed">
-  <h2 className="text-2xl font-bold text-white">
+  <h2 className="text-2xl font-bold text-white text-center">
     Who Takes Responsibility for Sky Lanterns?{" "}
   </h2>
-  <p className="text-white/60 text-sm">
+  <p className="flex justify-end text-white/60 text-sm mt-1">
     <a href="https://github.com/htjworld" target="_blank" rel="noopener noreferrer" className="underline">
       htjworld
     </a>{" "}
@@ -83,6 +67,14 @@ We built this space so only your worries drift away — and nothing else.
   
 
 </article>
+<footer className="mt-12 text-center">
+  <p className="text-[10px] italic font-mono text-white/40 tracking-wide">
+    If you have a stunning lantern photo, please send it to 
+    <a href="mailto:eeehtj@gmail.com" className="underline mx-1">eeehtj@gmail.com</a>
+    <br />
+    <span className="text-white/30">(Include source & location in parentheses)</span>
+  </p>
+</footer>
     </div>
   );
 }
