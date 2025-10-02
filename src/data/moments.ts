@@ -102,4 +102,23 @@ export const MOMENTS: MomentItem[] = [
     dateAdded: "2025-07-29",
     href: "https://www.facebook.com/groups/332906624145754/posts/1993105388125861/",
   },
+
+
+  {
+    id: "wl000001",
+    src: "/images/wl000001.jpg",
+    source: "paramount aurora",
+    tags: ["Water Lantern"],
+    dateAdded: "2025-09-16",
+    href: "https://paramountaurora.com/events/water-lantern-festival/",
+  },
+
+  {
+    id: "wl000002",
+    src: "/images/wl000002.jpg",
+    source: "paramount aurora",
+    tags: ["Water Lantern"],
+    dateAdded: "2025-09-16",
+    href: "https://paramountaurora.com/events/water-lantern-festival/",
+  },
 ];
