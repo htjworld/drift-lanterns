@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Credit
+public/sounds/Love Is.wav
+src/CreditPage.tsx

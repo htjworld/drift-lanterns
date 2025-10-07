@@ -35,7 +35,10 @@ export default function HomePage() {
     // 음악 재생 트리거 (레이아웃 오디오)
     window.dispatchEvent(new CustomEvent("music:play"));
 
-    const tick = setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : 0)), 1000);
+    const tick = setInterval(
+      () => setSeconds((s) => (s > 0 ? s - 1 : 0)),
+      1000
+    );
     const cueTimer = setInterval(
       () => setCueIndex((i) => (i < cues.length - 1 ? i + 1 : i)),
       12000
@@ -49,8 +52,8 @@ export default function HomePage() {
   // 로고와 최종 메시지 타이밍: 마지막 문구가 끝난 뒤 2초 후 로고, 그 1초 뒤 메시지
   useEffect(() => {
     if (seconds === 0) {
-      const logoTimer = setTimeout(() => setShowLogo(true), 2000);     // +2s
-      const msgTimer = setTimeout(() => setShowFinalMsg(true), 3000);  // +3s
+      const logoTimer = setTimeout(() => setShowLogo(true), 2000); // +2s
+      const msgTimer = setTimeout(() => setShowFinalMsg(true), 3000); // +3s
       return () => {
         clearTimeout(logoTimer);
         clearTimeout(msgTimer);
@@ -97,7 +100,13 @@ export default function HomePage() {
             />
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setStarted(true)}
+                onClick={() => {
+                  if (text === "CREDIT") {
+                    navigate("/credit");
+                    return;
+                  }
+                  setStarted(true);
+                }}
                 className="rounded-xl bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
               >
                 Set it afloat
