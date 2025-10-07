@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { hasCredit } from "./optionalRoutes";
 
 const SHOW_BOAT = false;
 const LAUNCH_START_Y = 10;
@@ -102,8 +103,10 @@ export default function HomePage() {
               <button
                 onClick={() => {
                   if (text === "CREDIT") {
-                    navigate("/credit");
-                    return;
+                    if (hasCredit) {
+                      navigate("/credit");
+                      return;
+                    }
                   }
                   setStarted(true);
                 }}
@@ -205,7 +208,6 @@ export default function HomePage() {
   );
 }
 
-/* === 필요한 전경 컴포넌트만 유지 (Boat는 필요 시) === */
 function LanternLaunch({
   text,
   launched,
