@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { hasCredit } from "./optionalRoutes";
+import { cueMap, cueSetIds } from "./cues";
+import { shuffle } from "./utils/shuffle";
 
 const SHOW_BOAT = false;
 const LAUNCH_START_Y = 10;
 const LAUNCH_DISTANCE_VH = 130;
-const LAUNCH_DURATION = 16;
+const LAUNCH_DURATION = 40;
 
 export default function HomePage() {
   const [text, setText] = useState<string>("");
@@ -16,41 +18,58 @@ export default function HomePage() {
   const [cueIndex, setCueIndex] = useState<number>(0);
   const [showLogo, setShowLogo] = useState(false);
   const [showFinalMsg, setShowFinalMsg] = useState(false);
+  const [currentSetId, setCurrentSetId] = useState<string | null>(null);
+  const [currentCues, setCurrentCues] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const cues: string[] = [
-    "Breathe in… and out.",
-    "Waves carry what you no longer hold.",
-    "You are not alone out here.",
-    "Your worry is smaller than it felt.",
-    "You did well. Be gentle with yourself.",
-  ];
+  // 세트 순서 큐
+  const orderRef = useRef<string[]>([]);
+  const orderIdxRef = useRef<number>(0);
+
+  useEffect(() => {
+    orderRef.current = shuffle(cueSetIds);
+    orderIdxRef.current = 0;
+    // 첫 세트 미리 세팅(start 버튼시 세팅으로 바꿔도 됨)
+    const firstId =
+      orderRef.current[orderIdxRef.current % orderRef.current.length];
+    setCurrentSetId(firstId);
+    setCurrentCues(cueMap[firstId]);
+  }, []);
 
   // 시작 시 타이머와 음악 트리거
   useEffect(() => {
-    if (!started) return;
+    if (!started || !currentSetId) return;
+
     setLaunched(true);
     setSeconds(60);
     setCueIndex(0);
 
-    // 음악 재생 트리거 (레이아웃 오디오)
+    // 음악 재생 트리거
     window.dispatchEvent(new CustomEvent("music:play"));
 
-    const tick = setInterval(
-      () => setSeconds((s) => (s > 0 ? s - 1 : 0)),
-      1000
+    // 1초 카운트다운
+    const tick = setInterval(() => {
+      setSeconds((s) => (s > 0 ? s - 1 : 0));
+    }, 1000);
+
+    // 문구 전환 간격 계산 (58초 동안만)
+    const lines = currentCues;
+    const stepMs = Math.max(
+      1,
+      Math.floor((58 * 1000) / Math.max(1, lines.length))
     );
-    const cueTimer = setInterval(
-      () => setCueIndex((i) => (i < cues.length - 1 ? i + 1 : i)),
-      12000
-    );
+
+    const cueTimer = setInterval(() => {
+      setCueIndex((i) => (i < lines.length - 1 ? i + 1 : i));
+    }, stepMs);
+
     return () => {
       clearInterval(tick);
       clearInterval(cueTimer);
     };
-  }, [started]);
+  }, [started, currentSetId]);
 
-  // 로고와 최종 메시지 타이밍: 마지막 문구가 끝난 뒤 2초 후 로고, 그 1초 뒤 메시지
+  // 로고/최종 메시지 타이밍 (마지막 2초)
   useEffect(() => {
     if (seconds === 0) {
       const logoTimer = setTimeout(() => setShowLogo(true), 2000); // +2s
@@ -60,11 +79,18 @@ export default function HomePage() {
         clearTimeout(msgTimer);
       };
     } else {
-      // 다시 시작할 때 초기화
       setShowLogo(false);
       setShowFinalMsg(false);
     }
   }, [seconds]);
+
+  const advanceSet = () => {
+    orderIdxRef.current += 1;
+    const nextId =
+      orderRef.current[orderIdxRef.current % orderRef.current.length];
+    setCurrentSetId(nextId);
+    setCurrentCues(cueMap[nextId]);
+  };
 
   const reset = () => {
     setStarted(false);
@@ -72,6 +98,7 @@ export default function HomePage() {
     setSeconds(60);
     setCueIndex(0);
     setText("");
+    advanceSet();
   };
 
   // 항상 아래에서 위로 등장, 위로 사라지도록 고정
@@ -108,9 +135,19 @@ export default function HomePage() {
                       return;
                     }
                   }
+                  if (!currentSetId) {
+                    const id =
+                      orderRef.current[
+                        orderIdxRef.current % orderRef.current.length
+                      ];
+                    setCurrentSetId(id);
+                    setCurrentCues(cueMap[id]);
+                  }
                   setStarted(true);
                 }}
-                className="rounded-xl bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200"
+                disabled={!currentSetId}
+                aria-busy={!currentSetId}
+                className="rounded-xl bg-white px-5 py-3 font-medium text-black hover:bg-zinc-200 disabled:opacity-50"
               >
                 Set it afloat
               </button>
@@ -123,10 +160,9 @@ export default function HomePage() {
       ) : (
         <div className="relative z-20 flex min-h-screen items-center justify-center px-4 text-center">
           <AnimatePresence mode="wait">
-            {/* seconds가 1-59일 동안만 문구 표시 (항상 아래→위 애니메이션) */}
             {seconds > 0 && seconds < 60 && (
               <motion.p
-                key={cueIndex}
+                key={`${currentSetId}-${cueIndex}`}
                 {...cueMotion}
                 className="mx-auto max-w-[32ch] text-[clamp(28px,7vw,50px)] font-semibold 
                  leading-snug text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]"
@@ -135,7 +171,7 @@ export default function HomePage() {
                     "0 3px 12px rgba(0,0,0,0.8), 0 0 28px rgba(200,200,255,0.45)",
                 }}
               >
-                {cues[cueIndex]}
+                {currentCues[cueIndex] ?? ""}
               </motion.p>
             )}
           </AnimatePresence>

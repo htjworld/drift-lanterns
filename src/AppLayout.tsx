@@ -33,7 +33,7 @@ export default function AppLayout() {
   );
 }
 
-/* ==== 배경 컴포넌트 (기존 코드 그대로 이식) ==== */
+/* ==== 배경 컴포넌트 ==== */
 function StarDust() {
   return (
     <div className="pointer-events-none absolute inset-0 opacity-50">
