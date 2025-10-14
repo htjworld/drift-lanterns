@@ -50,7 +50,7 @@ export const cueSets: CueSet[] = [
       "It’s okay to admit that it was hard.",
       "Even your imperfections are what make you, you.",
       "Perhaps your truest self is already the most complete version of you.",
-      "Tell yourself softly: you did well.",
+      "Tell yourself softly : you did well.",
       "Don’t forget kindness toward yourself and the world around you.",
     ],
   },

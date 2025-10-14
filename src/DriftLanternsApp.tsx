@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { hasCredit } from "./optionalRoutes";
@@ -8,7 +8,7 @@ import { shuffle } from "./utils/shuffle";
 const SHOW_BOAT = false;
 const LAUNCH_START_Y = 10;
 const LAUNCH_DISTANCE_VH = 130;
-const LAUNCH_DURATION = 40;
+const LAUNCH_DURATION = 38;
 
 export default function HomePage() {
   const [text, setText] = useState<string>("");
@@ -52,11 +52,11 @@ export default function HomePage() {
       setSeconds((s) => (s > 0 ? s - 1 : 0));
     }, 1000);
 
-    // 문구 전환 간격 계산 (58초 동안만)
+    // 문구 전환 간격 계산
     const lines = currentCues;
     const stepMs = Math.max(
       1,
-      Math.floor((58 * 1000) / Math.max(1, lines.length))
+      Math.floor((59 * 1000) / Math.max(1, lines.length))
     );
 
     const cueTimer = setInterval(() => {
@@ -101,12 +101,12 @@ export default function HomePage() {
     advanceSet();
   };
 
-  // 항상 아래에서 위로 등장, 위로 사라지도록 고정
-  const cueMotion = {
-    initial: { opacity: 0, y: 16 }, // 아래에서
+
+  const cueMotion = useMemo(() => ({
+    initial: { opacity: 0, y: 16 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.9 } },
     exit: { opacity: 0, y: -16, transition: { duration: 0.9 } }, // 위로 사라짐
-  } as const;
+  } as const), []);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -243,13 +243,42 @@ export default function HomePage() {
     </div>
   );
 }
+function makeQuadraticKeyframes({
+  startY, // 시작 오프셋 (vh, +방향)
+  distanceVH, // 최종 목표까지의 추가 이동 (vh, -방향)
+  samples = 60, // 키프레임 개수(샘플링 수) - 많을수록 더 매끈
+  epsilon = 0.18, // 바닥 속도(0~1). 높을수록 초반이 더 ‘살짝’ 움직임
+}: {
+  startY: number;
+  distanceVH: number;
+  samples?: number;
+  epsilon?: number;
+}) {
+  // 총 이동량: initial y = +startY → final y = -(startY + distanceVH)
+  const delta = -(2 * startY + distanceVH); // 음수(위로 이동)
+  // 정규화된 속도 v(p) = ε + (1-ε) p^2  (0<=p<=1)
+  // 적분으로 위치 s(p) = (ε p + (1-ε) p^3 / 3) / (ε + (1-ε)/3)
+  const norm = epsilon + (1 - epsilon) / 3;
+
+  const times: number[] = [];
+  const y: string[] = [];
+
+  for (let i = 0; i <= samples; i++) {
+    const p = i / samples; // 0..1
+    const s = (epsilon * p + ((1 - epsilon) * p ** 3) / 3) / norm; // 위치(0..1)
+    const yVH = startY + delta * s; // 현재 y (vh 단위)
+    times.push(p);
+    y.push(`${yVH}vh`);
+  }
+  return { y, times };
+}
 
 function LanternLaunch({
   text,
   launched,
   startY = 0,
   distanceVH = 110,
-  duration = 18,
+  duration = 58,
   withBoat = true,
 }: {
   text: string;
@@ -259,6 +288,23 @@ function LanternLaunch({
   duration?: number;
   withBoat?: boolean;
 }) {
+  // 2차 속도 프로파일 키프레임 생성
+  const { y, times } = useMemo(
+    () =>
+      makeQuadraticKeyframes({
+        startY,
+        distanceVH,
+        samples: 60,
+        epsilon: 0.12,
+      }),
+    [startY, distanceVH]
+  );
+
+  const easeLinear = useMemo(
+    () => Array(Math.max(1, times.length - 1)).fill("linear" as const),
+    [times.length]
+  );
+
   return (
     <div
       className={`pointer-events-none absolute inset-0 z-10 flex items-end justify-center ${
@@ -270,12 +316,18 @@ function LanternLaunch({
         animate={
           launched
             ? {
-                y: `-${startY + distanceVH}vh`,
-                opacity: [1, 1, 0.95, 0.7, 0.35, 0],
+                y, // ⬅ 2차속도 기반 위치 키프레임
+                opacity: [1, 1, 0.96, 0.9, 0.86, 0.84], // 중간에 사라지지 않게 유지
               }
             : { y: `${startY}vh`, opacity: 1 }
         }
-        transition={{ duration: launched ? duration : 0.4, ease: "easeInOut" }}
+        transition={{
+          type: "keyframes",
+          duration: launched ? duration : 0.4,
+          ease: launched ? easeLinear : "linear", // 전 구간 linear 보간
+          times,
+        }}
+        style={{ willChange: "transform" }}
         className="flex flex-col items-center gap-3"
       >
         <Lantern lit={launched} text={launched ? text : undefined} />
