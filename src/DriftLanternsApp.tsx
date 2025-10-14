@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { hasCredit } from "./optionalRoutes";
 import { cueMap, cueSetIds } from "./cues";
 import { shuffle } from "./utils/shuffle";
+import { audioBus } from "./audioBus";
 
 const SHOW_BOAT = false;
 const LAUNCH_START_Y = 10;
@@ -26,10 +27,12 @@ export default function HomePage() {
   const orderRef = useRef<string[]>([]);
   const orderIdxRef = useRef<number>(0);
 
+
   useEffect(() => {
     orderRef.current = shuffle(cueSetIds);
     orderIdxRef.current = 0;
-    // 첫 세트 미리 세팅(start 버튼시 세팅으로 바꿔도 됨)
+    // 첫 세트 미리 세팅
+    // 가능한 추가 방안 : start 버튼시 세팅하기
     const firstId =
       orderRef.current[orderIdxRef.current % orderRef.current.length];
     setCurrentSetId(firstId);
@@ -43,9 +46,6 @@ export default function HomePage() {
     setLaunched(true);
     setSeconds(60);
     setCueIndex(0);
-
-    // 음악 재생 트리거
-    window.dispatchEvent(new CustomEvent("music:play"));
 
     // 1초 카운트다운
     const tick = setInterval(() => {
@@ -101,12 +101,15 @@ export default function HomePage() {
     advanceSet();
   };
 
-
-  const cueMotion = useMemo(() => ({
-    initial: { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.9 } },
-    exit: { opacity: 0, y: -16, transition: { duration: 0.9 } }, // 위로 사라짐
-  } as const), []);
+  const cueMotion = useMemo(
+    () =>
+      ({
+        initial: { opacity: 0, y: 16 },
+        animate: { opacity: 1, y: 0, transition: { duration: 0.9 } },
+        exit: { opacity: 0, y: -16, transition: { duration: 0.9 } }, // 위로 사라짐
+      } as const),
+    []
+  );
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -129,20 +132,15 @@ export default function HomePage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => {
-                  if (text === "CREDIT") {
-                    if (hasCredit) {
-                      navigate("/credit");
-                      return;
-                    }
+                  if (text === "CREDIT" && hasCredit) {
+                    audioBus.play("/sounds/credit.wav", {
+                      loop: true,
+                      fade: false,
+                    });
+                    navigate("/credit");
+                    return;
                   }
-                  if (!currentSetId) {
-                    const id =
-                      orderRef.current[
-                        orderIdxRef.current % orderRef.current.length
-                      ];
-                    setCurrentSetId(id);
-                    setCurrentCues(cueMap[id]);
-                  }
+                  audioBus.ensureAmbient();
                   setStarted(true);
                 }}
                 disabled={!currentSetId}

@@ -1,27 +1,11 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
+
 export default function AppLayout() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // 홈에서 보낸 'music:play' 이벤트 수신 → 레이아웃의 오디오 재생
-  useEffect(() => {
-    const onPlay = async () => {
-      try { await audioRef.current?.play(); } catch {}
-    };
-    window.addEventListener("music:play", onPlay as EventListener);
-    return () => window.removeEventListener("music:play", onPlay as EventListener);
-  }, []);
-
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#0a1230] text-white">
-      {/* 음악 (영구) */}
-      <audio ref={audioRef} loop>
-        <source src="/sounds/ambient.mp3" type="audio/mpeg" />
-      </audio>
-
-      {/* 공통 배경 (영구) */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-10%,rgba(160,180,255,0.18),transparent_55%),linear-gradient(to_bottom,#0a1230_0%,#0a1230_40%,#050b22_60%,#020817_100%)]" />
       <StarDust />
       <Ocean />
