@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react"
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter as BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./AppLayout";
 import HomePage from "./DriftLanternsApp";
 import MomentsPage from "./MomentsPage";
