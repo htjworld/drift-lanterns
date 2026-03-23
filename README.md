@@ -1,69 +1,57 @@
-# React + TypeScript + Vite
+# drift-lanterns
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 고민이나 소망을 담아 랜턴을 띄우는 1분 온라인 명상 앱
 
-Currently, two official plugins are available:
+## Background
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+풍등은 하늘로 날아올라 산불을 일으키고, 수면 위를 떠다니는 연등은 해양 동물에게 위협이 됩니다.
+그럼에도 랜턴은 아름답고, 그 안에 바람을 담아 보내는 행위 자체는 사람에게 의미가 있습니다.
 
-## Expanding the ESLint configuration
+현실의 랜턴을 대체할 온라인 명상 경험을 만들고 싶었습니다.
+풍등도 연등도 아닌, 이 서비스에서만 존재하는 제3의 등입니다.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+고민이나 소망을 적어 랜턴을 띄우고 1분간 명상합니다.
+심난한 친구들이 잠깐이라도 마음을 내려놓을 수 있으면 좋겠다는 마음으로 만들었습니다.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- 랜턴 날리기 — 고민이나 소망을 적고 등을 띄워 보내기
+- 1분 명상 — 랜턴이 올라가는 동안 테마별 명상 문구 안내 (5가지 테마 랜덤 제공)
+- Moments 갤러리 — 세계 랜턴 축제 사진 모음과 환경적 경각심을 함께 전달
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Preview
+
+| <랜턴 날리기 화면> | <Moments 갤러리 화면> |
+|---|---|
+| ![home](./assets/home.gif) | ![moments](./assets/moments.png) |
+(추가 예정)
+## Tech Stack
+
+**Frontend**
+
+[![Skills](https://skillicons.dev/icons?i=react,vite,tailwind)](https://skillicons.dev)
+
+## Getting Started
+
+**Requirements**
+- Node.js 18+
+
+**macOS / Linux**
+```bash
+git clone https://github.com/htjworld/drift-lanterns.git
+cd drift-lanterns
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Windows**
+```bash
+git clone https://github.com/htjworld/drift-lanterns.git
+cd drift-lanterns
+npm install
+npm run dev
 ```
+
+## License
+
+MIT © htjworld
