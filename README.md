@@ -6,6 +6,8 @@
 
 > 고민이나 소망을 담아 랜턴을 띄우는 1분 온라인 명상 앱
 
+🔗 **[https://htjworld.github.io/drift-lanterns/](https://htjworld.github.io/drift-lanterns/)**
+
 ## Background
 
 풍등은 하늘로 날아올라 산불을 일으키고, 수면 위를 떠다니는 연등은 해양 동물에게 위협이 됩니다.
