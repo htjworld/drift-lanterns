@@ -25,7 +25,3 @@ dist-ssr
 
 # Claude
 .claude/
-
-# Credit
-public/sounds/credit.wav
-src/CreditPage.tsx
