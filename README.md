@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/Drift-Lanterns-logo.png" alt="Drift Lanterns Logo" width="320" />
+  <img src="./assets/Drift-Lanterns-logo.png" alt="Drift Lanterns Logo" />
 </div>
 
 # Drift Lanterns
@@ -36,6 +36,7 @@
 | ![moments](./assets/moments.png) |
 
 </div>
+
 ## Tech Stack
 
 **Frontend**
