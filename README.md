@@ -1,4 +1,8 @@
-# drift-lanterns
+<div align="center">
+  <img src="./assets/Drift-Lanterns-logo.png" alt="Drift Lanterns Logo" width="320" />
+</div>
+
+# Drift Lanterns
 
 > 고민이나 소망을 담아 랜턴을 띄우는 1분 온라인 명상 앱
 
@@ -21,10 +25,17 @@
 
 ## Preview
 
-| <랜턴 날리기 화면> | <Moments 갤러리 화면> |
-|---|---|
-| ![home](./assets/home.gif) | ![moments](./assets/moments.png) |
-(추가 예정)
+<div align="center">
+
+| 랜턴 날리기 화면 |
+|:---:|
+| ![home](./assets/home.png) |
+
+| Moments 갤러리 화면 |
+|:---:|
+| ![moments](./assets/moments.png) |
+
+</div>
 ## Tech Stack
 
 **Frontend**
