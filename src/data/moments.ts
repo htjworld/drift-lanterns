@@ -15,10 +15,12 @@ export interface MomentItem {
   href?: string;             // (옵션) 출처 링크
 }
 
+const base = import.meta.env.BASE_URL;
+
 export const MOMENTS: MomentItem[] = [
   {
     id: "cm000001",
-    src: "/images/cm000001.jpeg",
+    src: `${base}images/cm000001.jpeg`,
     source: "매일경제",
     tags: ["Chiang Mai", "Sky Lantern"],
     dateAdded: "2018-11-28",
@@ -27,7 +29,7 @@ export const MOMENTS: MomentItem[] = [
   },
   {
     id: "cm000002",
-    src: "/images/cm000002.jpeg",
+    src: `${base}images/cm000002.jpeg`,
     source: "매일경제",
     tags: ["Chiang Mai", "Sky Lantern"],
     dateAdded: "2018-11-28",
@@ -35,7 +37,7 @@ export const MOMENTS: MomentItem[] = [
   },
   {
     id: "cm000003",
-    src: "/images/cm000003.jpeg",
+    src: `${base}images/cm000003.jpeg`,
     source: "매일경제",
     tags: ["Chiang Mai", "Sky Lantern"],
     dateAdded: "2018-11-28",
@@ -44,7 +46,7 @@ export const MOMENTS: MomentItem[] = [
 
   {
     id: "px000001",
-    src: "/images/px000001.webp",
+    src: `${base}images/px000001.webp`,
     source: "traveloka",
     tags: ["Pingxi", "Sky Lantern"],
     dateAdded: "2019-02-06",
@@ -53,7 +55,7 @@ export const MOMENTS: MomentItem[] = [
   },
   {
     id: "px000002",
-    src: "/images/px000002.webp",
+    src: `${base}images/px000002.webp`,
     source: "traveloka",
     tags: ["Pingxi", "Sky Lantern"],
     dateAdded: "2019-02-19",
@@ -61,7 +63,7 @@ export const MOMENTS: MomentItem[] = [
   },
   {
     id: "px000003",
-    src: "/images/px000003.webp",
+    src: `${base}images/px000003.webp`,
     source: "IMAGINE X",
     tags: ["Pingxi", "Sky Lantern"],
     dateAdded: "2018-03-02",
@@ -70,7 +72,7 @@ export const MOMENTS: MomentItem[] = [
   },
   {
     id: "px000004",
-    src: "/images/px000004.jpg",
+    src: `${base}images/px000004.jpg`,
     source: "kkday",
     tags: ["Pingxi", "Sky Lantern"],
     dateAdded: "2020-02-06",
@@ -78,7 +80,7 @@ export const MOMENTS: MomentItem[] = [
   },
   {
     id: "px000005",
-    src: "/images/px000005.jpg",
+    src: `${base}images/px000005.jpg`,
     source: "Shutterstock",
     tags: ["Pingxi", "Sky Lantern"],
     dateAdded: "2020-02-06",
@@ -87,7 +89,7 @@ export const MOMENTS: MomentItem[] = [
 
   {
     id: "ha000001",
-    src: "/images/ha000001.png",
+    src: `${base}images/ha000001.png`,
     source: "FURAMA Resort DANANG",
     tags: ["Hoi An", "Water Lantern"],
     dateAdded: "2020-02-06",
@@ -96,17 +98,16 @@ export const MOMENTS: MomentItem[] = [
 
   {
     id: "ha000002",
-    src: "/images/ha000002.jpg",
+    src: `${base}images/ha000002.jpg`,
     source: "facebook",
     tags: ["Hoi An", "Water Lantern"],
     dateAdded: "2025-07-29",
     href: "https://www.facebook.com/groups/332906624145754/posts/1993105388125861/",
   },
 
-
   {
     id: "wl000001",
-    src: "/images/wl000001.jpg",
+    src: `${base}images/wl000001.jpg`,
     source: "paramount aurora",
     tags: ["Water Lantern"],
     dateAdded: "2025-09-16",
@@ -115,7 +116,7 @@ export const MOMENTS: MomentItem[] = [
 
   {
     id: "wl000002",
-    src: "/images/wl000002.jpg",
+    src: `${base}images/wl000002.jpg`,
     source: "paramount aurora",
     tags: ["Water Lantern"],
     dateAdded: "2025-09-16",

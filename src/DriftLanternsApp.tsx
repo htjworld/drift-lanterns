@@ -133,7 +133,7 @@ export default function HomePage() {
               <button
                 onClick={() => {
                   if (text === "CREDIT" && hasCredit) {
-                    audioBus.play("/sounds/credit.wav", {
+                    audioBus.play(`${import.meta.env.BASE_URL}sounds/credit.wav`, {
                       loop: true,
                       fade: false,
                     });

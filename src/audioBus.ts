@@ -1,5 +1,5 @@
 // audioBus.ts
-const AMBIENT_SRC = "/sounds/ambient.mp3";
+const AMBIENT_SRC = `${import.meta.env.BASE_URL}sounds/ambient.mp3`;
 
 type Options = { loop?: boolean; fade?: boolean; fadeOutMs?: number };
 
