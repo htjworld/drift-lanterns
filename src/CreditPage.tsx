@@ -14,7 +14,7 @@ export default function CreditPage() {
     <div className="relative min-h-screen w-full overflow-hidden">
       <BackgroundLanterns
         count={16}
-        text="로경"
+        text="평안"
         size="sm"
         zIndex={8}
         disableDefaultBg
@@ -40,7 +40,7 @@ export default function CreditPage() {
                 "0 4px 14px rgba(0,0,0,0.85), 0 0 36px rgba(200,200,255,0.48)",
             }}
           >
-            Special thx to 로야&도경🏮
+            이 글을 보는 모두가 행복하길🏮
           </h2>
         </div>
       </div>
