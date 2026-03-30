@@ -39,6 +39,10 @@
 
 </div>
 
+## Language
+
+영어(English)를 지원합니다.
+
 ## Tech Stack
 
 **Frontend**
@@ -50,15 +54,7 @@
 **Requirements**
 - Node.js 18+
 
-**macOS / Linux**
-```bash
-git clone https://github.com/htjworld/drift-lanterns.git
-cd drift-lanterns
-npm install
-npm run dev
-```
-
-**Windows**
+**macOS / Linux / Windows**
 ```bash
 git clone https://github.com/htjworld/drift-lanterns.git
 cd drift-lanterns
